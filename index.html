@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Compactação</title>
+  <title>Calculadora de densidade <i>in situ</i></title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,6 +12,7 @@
       padding: 0;
       background-color: #f5f5f5;
       color: #333;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     .container {
@@ -20,6 +22,7 @@
       border-radius: 5px;
       background-color: #fff;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
     }
 
     .input-container {
@@ -68,11 +71,56 @@
       margin-top: 20px;
       font-weight: bold;
     }
+
+    /* Modo Dark */
+    body.dark-mode {
+      background-color: #333;
+      color: #fff;
+    }
+
+    .container.dark-mode {
+      background-color: #444;
+      color: #fff;
+    }
+
+    .input-field.dark-mode {
+      background-color: #666;
+      color: #fff;
+    }
+
+    .calculate-btn.dark-mode {
+      background-color: #004080;
+    }
+
+    .calculate-btn.dark-mode:hover {
+      background-color: #003366;
+    }
+
+    #toggleModeBtn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #333;
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    #toggleModeBtn:hover {
+      color: #007bff;
+    }
+
+    #toggleModeBtn.dark-mode {
+      color: #fff;
+    }
   </style>
 </head>
 <body>
+  <button id="toggleModeBtn" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
   <div class="container">
-    <h2 style="text-align: center;">Calculadora de densidade in situ</h2>
+    <h2 style="text-align: center;">Calculadora de densidade <i>in situ</i></h2>
     <div class="input-container">
       <label for="depois">Peso do frasco com areia:</label>
       <input type="number" id="depois" placeholder="" class="input-field">
@@ -106,6 +154,13 @@
   </div>
 
   <script>
+    function toggleDarkMode() {
+      var body = document.body;
+      body.classList.toggle("dark-mode");
+      var container = document.querySelector(".container");
+      container.classList.toggle("dark-mode");
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
       var calcularBtn = document.getElementById("calcularBtn");
       var inputs = document.querySelectorAll(".input-field");
@@ -130,7 +185,7 @@
         var pesoSoloUmido = parseFloat(document.getElementById("peso-solo-umido").value);
         var densidadeLaboratorio = parseFloat(document.getElementById("densidade-laboratorio").value);
         var umidadeLaboratorio = parseFloat(document.getElementById("umidade-laboratorio").value);
-
+  
         var a1 = 6000 - depois;
         var b1 = a1 - pesoAreiaFunil;
         var c1 = b1 / densidadeAreia;
