@@ -78,7 +78,7 @@
       color: #fff;
     }
 
-    .container.dark-mode {
+    body.dark-mode .container {
       background-color: #444;
       color: #fff;
     }
@@ -102,7 +102,7 @@
       right: 20px;
       background: none;
       border: none;
-      color: #333;
+      color: #ffa500; /* Laranja */
       font-size: 24px;
       cursor: pointer;
       transition: color 0.3s ease;
@@ -113,7 +113,7 @@
     }
 
     #toggleModeBtn.dark-mode {
-      color: #fff;
+      color: #bada55; /* Verde */
     }
   </style>
 </head>
@@ -154,13 +154,23 @@
   </div>
 
   <script>
+    // Função para alternar entre os modos claro e escuro
     function toggleDarkMode() {
       var body = document.body;
       body.classList.toggle("dark-mode");
-      var container = document.querySelector(".container");
-      container.classList.toggle("dark-mode");
+
+      // Armazena a escolha do usuário no armazenamento local
+      var isDarkMode = body.classList.contains("dark-mode");
+      localStorage.setItem("darkMode", isDarkMode);
     }
 
+    // Verifica se o usuário já tinha escolhido o modo escuro anteriormente
+    var isDarkMode = localStorage.getItem("darkMode") === "true";
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    }
+
+    // Adiciona eventos aos campos de entrada para habilitar o botão de calcular
     document.addEventListener("DOMContentLoaded", function() {
       var calcularBtn = document.getElementById("calcularBtn");
       var inputs = document.querySelectorAll(".input-field");
@@ -177,6 +187,7 @@
         });
       });
 
+      // Calcula o resultado quando o botão de calcular é clicado
       calcularBtn.addEventListener("click", function() {
         var depois = parseFloat(document.getElementById("depois").value);
         var pesoAreiaFunil = parseFloat(document.getElementById("peso-areia-funil").value);
@@ -185,7 +196,7 @@
         var pesoSoloUmido = parseFloat(document.getElementById("peso-solo-umido").value);
         var densidadeLaboratorio = parseFloat(document.getElementById("densidade-laboratorio").value);
         var umidadeLaboratorio = parseFloat(document.getElementById("umidade-laboratorio").value);
-  
+
         var a1 = 6000 - depois;
         var b1 = a1 - pesoAreiaFunil;
         var c1 = b1 / densidadeAreia;
