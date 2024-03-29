@@ -144,7 +144,7 @@
 
     /* Estilo para os botões adicionais */
     .additional-buttons {
-      display: none;
+      display: flex;
       justify-content: space-between;
       margin-top: 20px;
     }
@@ -262,8 +262,8 @@
       // Exibir os botões de reset e download
       document.getElementById("additionalButtons").style.display = "flex";
 
-      // Ocultar o botão de calcular
-      document.getElementById("calcularBtn").style.display = "none";
+      // Renomeia o botão para Recalcular
+      document.getElementById("calcularBtn").textContent = "Recalcular";
     });
 
     // Limpar os campos quando o botão de reset é clicado
@@ -278,10 +278,8 @@
       document.getElementById("additionalButtons").style.display = "none";
 
       // Exibir o botão de calcular
-      document.getElementById("calcularBtn").style.display = "inline-block";
-
-      // Desabilitar o botão de calcular até que todos os campos sejam preenchidos novamente
-      document.getElementById("calcularBtn").disabled = true;
+      document.getElementById("calcularBtn").textContent = "Calcular";
+      document.getElementById("calcularBtn").disabled = true; // Desabilitar o botão de calcular
     });
   </script>
 </body>
