@@ -45,8 +45,9 @@
       box-sizing: border-box;
     }
 
-    .calculate-btn {
-      display: block;
+    .calculate-btn,
+    .reset-btn,
+    .download-btn {
       width: 100%;
       padding: 10px;
       background-color: #007bff;
@@ -58,11 +59,15 @@
       opacity: 0.5;
     }
 
-    .calculate-btn:hover {
+    .calculate-btn:hover,
+    .reset-btn:hover,
+    .download-btn:hover {
       background-color: #0056b3;
     }
 
-    .calculate-btn:disabled {
+    .calculate-btn:disabled,
+    .reset-btn:disabled,
+    .download-btn:disabled {
       background-color: #ccc;
       cursor: not-allowed;
     }
@@ -88,11 +93,15 @@
       color: #fff;
     }
 
-    .calculate-btn.dark-mode {
+    .calculate-btn.dark-mode,
+    .reset-btn.dark-mode,
+    .download-btn.dark-mode {
       background-color: #004080;
     }
 
-    .calculate-btn.dark-mode:hover {
+    .calculate-btn.dark-mode:hover,
+    .reset-btn.dark-mode:hover,
+    .download-btn.dark-mode:hover {
       background-color: #003366;
     }
 
@@ -102,7 +111,7 @@
       right: 20px;
       background: none;
       border: none;
-      color: #ffa500; /* Laranja */
+      color: #333; /* Removendo a cor amarela */
       font-size: 24px;
       cursor: pointer;
       transition: color 0.3s ease;
@@ -115,10 +124,38 @@
     #toggleModeBtn.dark-mode {
       color: #bada55; /* Verde */
     }
+
+    /* Rodapé */
+    footer {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 20px;
+      color: #666;
+    }
+
+    footer a {
+      color: #666;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: #333;
+    }
+
+    /* Estilo para os botões adicionais */
+    .additional-buttons {
+      display: none;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .additional-buttons button {
+      width: calc(50% - 5px); /* Metade da largura com uma pequena margem entre eles */
+    }
   </style>
 </head>
 <body>
-  <button id="toggleModeBtn" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+  <button id="toggleModeBtn" onclick="toggleDarkMode()"><i id="moonIcon" class="fas fa-moon"></i></button>
   <div class="container">
     <h2 style="text-align: center;">Calculadora de densidade <i>in situ</i></h2>
     <div class="input-container">
@@ -150,64 +187,101 @@
       <input type="number" id="umidade-laboratorio" step="0.01" placeholder="" class="input-field">
     </div>
     <button id="calcularBtn" class="calculate-btn" disabled>Calcular</button>
+    <div id="additionalButtons" class="additional-buttons" style="display: none;">
+      <button id="resetBtn" class="reset-btn">Limpar</button>
+      <button id="downloadBtn" class="download-btn">Salvar</button>
+    </div>
     <div id="resultado" class="result"></div>
   </div>
+  
+  <!-- Rodapé -->
+  <footer>
+    Desenvolvido por <a href="#">Felipe Nascimento</a> / <a href="#">Manoel Índio</a>.
+  </footer>
 
   <script>
-    // Função para alternar entre os modos claro e escuro
     function toggleDarkMode() {
       var body = document.body;
       body.classList.toggle("dark-mode");
 
-      // Armazena a escolha do usuário no armazenamento local
-      var isDarkMode = body.classList.contains("dark-mode");
-      localStorage.setItem("darkMode", isDarkMode);
+      // Salvar o modo escolhido no armazenamento local
+      localStorage.setItem("darkMode", body.classList.contains("dark-mode"));
+
+      // Mudar a cor do ícone da lua
+      var moonIcon = document.getElementById("moonIcon");
+      if (body.classList.contains("dark-mode")) {
+        moonIcon.style.color = "#f5f5f5"; // Cor do fundo claro
+      } else {
+        moonIcon.style.color = "#333"; // Cor do fundo escuro
+      }
     }
 
-    // Verifica se o usuário já tinha escolhido o modo escuro anteriormente
-    var isDarkMode = localStorage.getItem("darkMode") === "true";
-    if (isDarkMode) {
-      document.body.classList.add("dark-mode");
-    }
-
-    // Adiciona eventos aos campos de entrada para habilitar o botão de calcular
+    // Verificar se o modo escuro está ativado ao carregar a página
     document.addEventListener("DOMContentLoaded", function() {
-      var calcularBtn = document.getElementById("calcularBtn");
+      var darkModeEnabled = localStorage.getItem("darkMode") === "true";
+      if (darkModeEnabled) {
+        document.body.classList.add("dark-mode");
+        // Mudar a cor do ícone da lua para a cor do fundo claro
+        document.getElementById("moonIcon").style.color = "#f5f5f5";
+      }
+    });
+
+    // Verificar se todos os campos estão preenchidos para habilitar o botão de calcular
+    document.addEventListener("input", function() {
       var inputs = document.querySelectorAll(".input-field");
-
+      var isValid = true;
       inputs.forEach(function(input) {
-        input.addEventListener("input", function() {
-          var isValid = true;
-          inputs.forEach(function(input) {
-            if (input.value === "") {
-              isValid = false;
-            }
-          });
-          calcularBtn.disabled = !isValid;
-        });
+        if (input.value === "") {
+          isValid = false;
+        }
       });
+      document.getElementById("calcularBtn").disabled = !isValid;
+    });
 
-      // Calcula o resultado quando o botão de calcular é clicado
-      calcularBtn.addEventListener("click", function() {
-        var depois = parseFloat(document.getElementById("depois").value);
-        var pesoAreiaFunil = parseFloat(document.getElementById("peso-areia-funil").value);
-        var densidadeAreia = parseFloat(document.getElementById("densidade-areia").value);
-        var umidade = parseFloat(document.getElementById("umidade").value);
-        var pesoSoloUmido = parseFloat(document.getElementById("peso-solo-umido").value);
-        var densidadeLaboratorio = parseFloat(document.getElementById("densidade-laboratorio").value);
-        var umidadeLaboratorio = parseFloat(document.getElementById("umidade-laboratorio").value);
+    // Calcula o resultado quando o botão de calcular é clicado
+    document.getElementById("calcularBtn").addEventListener("click", function() {
+      var depois = parseFloat(document.getElementById("depois").value);
+      var pesoAreiaFunil = parseFloat(document.getElementById("peso-areia-funil").value);
+      var densidadeAreia = parseFloat(document.getElementById("densidade-areia").value);
+      var umidade = parseFloat(document.getElementById("umidade").value);
+      var pesoSoloUmido = parseFloat(document.getElementById("peso-solo-umido").value);
+      var densidadeLaboratorio = parseFloat(document.getElementById("densidade-laboratorio").value);
+      var umidadeLaboratorio = parseFloat(document.getElementById("umidade-laboratorio").value);
 
-        var a1 = 6000 - depois;
-        var b1 = a1 - pesoAreiaFunil;
-        var c1 = b1 / densidadeAreia;
-        var d1 = (pesoSoloUmido / (100 + umidade)) * 100;
-        var e1 = d1 / c1;
-        var resultado = (e1 / densidadeLaboratorio) * 100;
+      var a1 = 6000 - depois;
+      var b1 = a1 - pesoAreiaFunil;
+      var c1 = b1 / densidadeAreia;
+      var d1 = (pesoSoloUmido / (100 + umidade)) * 100;
+      var e1 = d1 / c1;
+      var resultado = (e1 / densidadeLaboratorio) * 100;
 
-        var f1 = Math.abs(umidade - umidadeLaboratorio).toFixed(1);
+      var f1 = Math.abs(umidade - umidadeLaboratorio).toFixed(1);
 
-        document.getElementById("resultado").innerHTML = "O grau de compactação é " + resultado.toFixed(1) + "%, e a diferença de umidade é ± " + f1;
+      document.getElementById("resultado").innerHTML = "O grau de compactação é " + resultado.toFixed(1) + "%, e a diferença de umidade é ± " + f1;
+
+      // Exibir os botões de reset e download
+      document.getElementById("additionalButtons").style.display = "flex";
+
+      // Ocultar o botão de calcular
+      document.getElementById("calcularBtn").style.display = "none";
+    });
+
+    // Limpar os campos quando o botão de reset é clicado
+    document.getElementById("resetBtn").addEventListener("click", function() {
+      var inputs = document.querySelectorAll(".input-field");
+      inputs.forEach(function(input) {
+        input.value = "";
       });
+      document.getElementById("resultado").innerHTML = "";
+
+      // Ocultar os botões de reset e download
+      document.getElementById("additionalButtons").style.display = "none";
+
+      // Exibir o botão de calcular
+      document.getElementById("calcularBtn").style.display = "inline-block";
+
+      // Desabilitar o botão de calcular até que todos os campos sejam preenchidos novamente
+      document.getElementById("calcularBtn").disabled = true;
     });
   </script>
 </body>
