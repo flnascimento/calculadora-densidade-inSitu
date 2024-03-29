@@ -159,37 +159,37 @@
   <div class="container">
     <h2 style="text-align: center;">Calculadora de densidade <i>in situ</i></h2>
     <div class="input-container">
-      <label for="depois">Peso do frasco com areia:</label>
+      <label for="depois">Peso do frasco com areia</label>
       <input type="number" id="depois" placeholder="" class="input-field">
     </div>
     <div class="input-container">
-      <label for="peso-areia-funil">Peso da areia no funil:</label>
+      <label for="peso-areia-funil">Peso da areia no funil</label>
       <input type="number" id="peso-areia-funil" placeholder="" class="input-field">
     </div>
     <div class="input-container">
-      <label for="densidade-areia">Densidade da areia:</label>
+      <label for="densidade-areia">Densidade da areia</label>
       <input type="number" id="densidade-areia" placeholder="" class="input-field">
     </div>
     <div class="input-container">
-      <label for="umidade">Umidade de campo:</label>
+      <label for="umidade">Umidade de campo</label>
       <input type="number" id="umidade" step="0.01" placeholder="" class="input-field">
     </div>
     <div class="input-container">
-      <label for="peso-solo-umido">Peso do solo úmido:</label>
+      <label for="peso-solo-umido">Peso do solo úmido</label>
       <input type="number" id="peso-solo-umido" placeholder="" class="input-field">
     </div>
     <div class="input-container">
-      <label for="densidade-laboratorio">Densidade de laboratório:</label>
+      <label for="densidade-laboratorio">Densidade de laboratório</label>
       <input type="number" id="densidade-laboratorio" placeholder="" class="input-field">
     </div>
     <div class="input-container">
-      <label for="umidade-laboratorio">Umidade de laboratório:</label>
+      <label for="umidade-laboratorio">Umidade de laboratório</label>
       <input type="number" id="umidade-laboratorio" step="0.01" placeholder="" class="input-field">
     </div>
     <button id="calcularBtn" class="calculate-btn" disabled>Calcular</button>
     <div id="additionalButtons" class="additional-buttons" style="display: none;">
       <button id="resetBtn" class="reset-btn">Limpar</button>
-      <button id="downloadBtn" class="download-btn">Salvar</button>
+      <button id="downloadBtn" class="download-btn">Exportar</button>
     </div>
     <div id="resultado" class="result"></div>
   </div>
@@ -259,10 +259,10 @@
 
       document.getElementById("resultado").innerHTML = "O grau de compactação é " + resultado.toFixed(1) + "%, e a diferença de umidade é ± " + f1;
 
-      // Exibir os botões de reset e download
+      // Exibir os botões de reset e exportar
       document.getElementById("additionalButtons").style.display = "flex";
 
-      // Renomeia o botão para Recalcular
+      // Renomeia o botão de calcular para Recalcular
       document.getElementById("calcularBtn").textContent = "Recalcular";
     });
 
@@ -274,12 +274,35 @@
       });
       document.getElementById("resultado").innerHTML = "";
 
-      // Ocultar os botões de reset e download
+      // Ocultar os botões de reset e exportar
       document.getElementById("additionalButtons").style.display = "none";
 
       // Exibir o botão de calcular
       document.getElementById("calcularBtn").textContent = "Calcular";
       document.getElementById("calcularBtn").disabled = true; // Desabilitar o botão de calcular
+    });
+
+    // Exporta os dados para um arquivo quando o botão de exportar é clicado
+    document.getElementById("downloadBtn").addEventListener("click", function() {
+      var dataToExport = ""; // String que conterá os dados a serem exportados
+
+      // Coleta os dados dos campos de entrada
+      var inputs = document.querySelectorAll(".input-container");
+      inputs.forEach(function(input) {
+        var label = input.querySelector("label").textContent;
+        var value = input.querySelector("input").value;
+        dataToExport += label + ": " + value + "\n";
+      });
+
+      // Adiciona o resultado à string de exportação
+      var resultado = document.getElementById("resultado").textContent;
+      dataToExport += "Resultado: " + resultado + "\n";
+
+      // Cria um elemento 'a' para fazer o download do arquivo
+      var downloadLink = document.createElement("a");
+      downloadLink.href = "data:text/plain;charset=utf-8," + encodeURIComponent(dataToExport);
+      downloadLink.download = "dados_calculadora.txt";
+      downloadLink.click();
     });
   </script>
 </body>
