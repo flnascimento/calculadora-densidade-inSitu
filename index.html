@@ -152,6 +152,17 @@
     .additional-buttons button {
       width: calc(50% - 5px); /* Metade da largura com uma pequena margem entre eles */
     }
+
+    /* Estilo para o campo de nome do arquivo */
+    .filename-container {
+      display: none;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .filename-container.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -187,6 +198,12 @@
       <input type="number" id="umidade-laboratorio" step="0.01" placeholder="" class="input-field">
     </div>
     <button id="calcularBtn" class="calculate-btn" disabled>Calcular</button>
+    <div id="filenameContainer" class="filename-container">
+        <div class="input-container">
+            <label for="nome" style="display: none;">Nome</label>
+            <input type="text" id="nome" placeholder="Densidade In Situ" class="input-field">
+        </div>
+    </div>
     <div id="additionalButtons" class="additional-buttons" style="display: none;">
       <button id="resetBtn" class="reset-btn">Limpar</button>
       <button id="downloadBtn" class="download-btn">Exportar</button>
@@ -231,7 +248,7 @@
       var inputs = document.querySelectorAll(".input-field");
       var isValid = true;
       inputs.forEach(function(input) {
-        if (input.value === "") {
+        if (input.value === "" && input.id !== "nome") {
           isValid = false;
         }
       });
@@ -259,11 +276,14 @@
 
       document.getElementById("resultado").innerHTML = "O grau de compactação é " + resultado.toFixed(1) + "%, e a diferença de umidade é ± " + f1;
 
+      // Alterar o texto do botão de calcular para "Recalcular"
+      document.getElementById("calcularBtn").textContent = "Recalcular";
+
       // Exibir os botões de reset e exportar
       document.getElementById("additionalButtons").style.display = "flex";
 
-      // Renomeia o botão de calcular para Recalcular
-      document.getElementById("calcularBtn").textContent = "Recalcular";
+      // Exibir o campo de nome do arquivo
+      document.getElementById("filenameContainer").classList.add("active");
     });
 
     // Limpar os campos quando o botão de reset é clicado
@@ -277,14 +297,23 @@
       // Ocultar os botões de reset e exportar
       document.getElementById("additionalButtons").style.display = "none";
 
+      // Ocultar o campo de nome do arquivo
+      document.getElementById("filenameContainer").classList.remove("active");
+
       // Exibir o botão de calcular
-      document.getElementById("calcularBtn").textContent = "Calcular";
-      document.getElementById("calcularBtn").disabled = true; // Desabilitar o botão de calcular
+      document.getElementById("calcularBtn").disabled = false; // Habilitar o botão de calcular
+      document.getElementById("calcularBtn").textContent = "Calcular"; // Alterar o texto do botão de calcular de volta para "Calcular"
     });
 
     // Exporta os dados para um arquivo quando o botão de exportar é clicado
     document.getElementById("downloadBtn").addEventListener("click", function() {
       var dataToExport = ""; // String que conterá os dados a serem exportados
+
+      // Coleta o nome digitado pelo usuário ou define como "Dados In Situ" se nenhum nome for fornecido
+      var nome = document.getElementById("nome").value.trim();
+      if (nome === "") {
+        nome = "Dados In Situ";
+      }
 
       // Coleta os dados dos campos de entrada
       var inputs = document.querySelectorAll(".input-container");
@@ -301,7 +330,7 @@
       // Cria um elemento 'a' para fazer o download do arquivo
       var downloadLink = document.createElement("a");
       downloadLink.href = "data:text/plain;charset=utf-8," + encodeURIComponent(dataToExport);
-      downloadLink.download = "dados_calculadora.txt";
+      downloadLink.download = nome.replace(/\s/g, "_") + ".txt"; // Substitui espaços em branco por underscores no nome do arquivo
       downloadLink.click();
     });
   </script>
